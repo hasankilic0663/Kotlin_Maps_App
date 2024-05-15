@@ -1,10 +1,11 @@
-package com.hasankilic.kotlinmaps
+package com.hasankilic.kotlinmaps.view
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import com.hasankilic.kotlinmaps.R
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,8 +21,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean { // o menuden secılen bısey secılırse ne olur
-        if (item.itemId==R.id.add_place){
-            val intent=Intent(this,MapsActivity::class.java)
+        if (item.itemId== R.id.add_place){
+            val intent=Intent(this, MapsActivity::class.java)
             startActivity(intent)
         }
         return super.onOptionsItemSelected(item)

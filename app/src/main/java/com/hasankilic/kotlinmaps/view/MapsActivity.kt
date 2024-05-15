@@ -1,4 +1,4 @@
-package com.hasankilic.kotlinmaps
+package com.hasankilic.kotlinmaps.view
 
 import android.Manifest
 import android.content.SharedPreferences
@@ -14,6 +14,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.room.Room
 
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -22,7 +23,11 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.snackbar.Snackbar
+import com.hasankilic.kotlinmaps.R
 import com.hasankilic.kotlinmaps.databinding.ActivityMapsBinding
+import com.hasankilic.kotlinmaps.model.Place
+import com.hasankilic.kotlinmaps.roomdb.PlaceDao
+import com.hasankilic.kotlinmaps.roomdb.PlaceDatabase
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback ,GoogleMap.OnMapLongClickListener{
 
@@ -36,6 +41,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback ,GoogleMap.OnMapLon
     private var takipetmeBoolean:Boolean?=null
     private var selectedLatitude :Double? =null
     private var selectedLongitude:Double?=null
+    private lateinit var db:PlaceDatabase
+    private lateinit var placeDao: PlaceDao
 
 
 
@@ -56,6 +63,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback ,GoogleMap.OnMapLon
         takipetmeBoolean=false
         selectedLatitude=0.0
         selectedLongitude=0.0
+
+        db = Room.databaseBuilder(applicationContext, PlaceDatabase::class.java, "Places").build()
+
+        placeDao = db.placeDao()
     }
 
 
@@ -149,6 +160,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback ,GoogleMap.OnMapLon
     }
 
     fun save(view:View){
+        val place =Place(binding.placeText.text.toString(), selectedLatitude!!,selectedLongitude!!)
+
+
+
+
 
     }
     fun delete(view:View){
