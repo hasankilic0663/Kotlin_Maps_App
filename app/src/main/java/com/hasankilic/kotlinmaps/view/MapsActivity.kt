@@ -64,7 +64,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback ,GoogleMap.OnMapLon
         selectedLatitude=0.0
         selectedLongitude=0.0
 
-        db = Room.databaseBuilder(applicationContext, PlaceDatabase::class.java, "Places").build()
+        db = Room.databaseBuilder(applicationContext, PlaceDatabase::class.java, "Places")
+
+            .allowMainThreadQueries() //mainthread kullanımına ızın verıyo
+            .build()
 
         placeDao = db.placeDao()
     }
@@ -160,14 +163,18 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback ,GoogleMap.OnMapLon
     }
 
     fun save(view:View){
-        val place =Place(binding.placeText.text.toString(), selectedLatitude!!,selectedLongitude!!)
 
+        //Main Thread UI, kullanıcı arayüzü ,default thread -->CPU
+
+        val place =Place(binding.placeText.text.toString(), selectedLatitude!!,selectedLongitude!!)
+        placeDao.insert(place)
 
 
 
 
     }
     fun delete(view:View){
+
 
     }
 
