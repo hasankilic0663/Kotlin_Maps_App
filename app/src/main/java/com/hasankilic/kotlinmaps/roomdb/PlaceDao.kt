@@ -20,6 +20,6 @@ interface PlaceDao {
     fun insert(place: Place):Completable
 
     @Delete
-    fun delete(place: Place):
+    fun delete(place: Place):Completable
 
 }

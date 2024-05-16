@@ -7,6 +7,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Test"
+        android:id="@+id/recycleViewTextView"
         android:textSize="22sp"
         android:textColor="#331E1E"
         android:layout_margin="6dp"

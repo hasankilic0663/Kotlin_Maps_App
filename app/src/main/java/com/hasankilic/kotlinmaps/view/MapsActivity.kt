@@ -1,6 +1,7 @@
 package com.hasankilic.kotlinmaps.view
 
 import android.Manifest
+import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.location.Location
@@ -28,8 +29,13 @@ import com.hasankilic.kotlinmaps.databinding.ActivityMapsBinding
 import com.hasankilic.kotlinmaps.model.Place
 import com.hasankilic.kotlinmaps.roomdb.PlaceDao
 import com.hasankilic.kotlinmaps.roomdb.PlaceDatabase
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.schedulers.Schedulers
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback ,GoogleMap.OnMapLongClickListener{
+
+
 
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityMapsBinding
@@ -43,6 +49,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback ,GoogleMap.OnMapLon
     private var selectedLongitude:Double?=null
     private lateinit var db:PlaceDatabase
     private lateinit var placeDao: PlaceDao
+    val compositeDisposable =CompositeDisposable() //disposable-kullan at demek , bu yaptıgımız ıslemlerı dısposable ıcıne atabılıyoz kullanat
 
 
 
@@ -66,7 +73,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback ,GoogleMap.OnMapLon
 
         db = Room.databaseBuilder(applicationContext, PlaceDatabase::class.java, "Places")
 
-            .allowMainThreadQueries() //mainthread kullanımına ızın verıyo
+            //.allowMainThreadQueries() //mainthread kullanımına ızın verıyo
             .build()
 
         placeDao = db.placeDao()
@@ -167,15 +174,29 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback ,GoogleMap.OnMapLon
         //Main Thread UI, kullanıcı arayüzü ,default thread -->CPU
 
         val place =Place(binding.placeText.text.toString(), selectedLatitude!!,selectedLongitude!!)
-        placeDao.insert(place)
+        compositeDisposable.add(
+            placeDao.insert(place)
+                .subscribeOn(Schedulers.io())// arka planda kayıt olma
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::handleResponse)// işlemi bitirebiliyoruz
 
+        )
 
-
-
+    }
+    private fun handleResponse(){
+        val intent=Intent(this@MapsActivity,MainActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)//onceki aktiviteleri kapat
+        startActivity(intent)
     }
     fun delete(view:View){
 
 
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        compositeDisposable.clear()//burada uygulama ondestroy yani kapandıgında cöp kutusuna atıyo herseyı
     }
 
 }
